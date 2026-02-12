@@ -14,7 +14,7 @@ Markdown file. It's primary intended use is for Markdown files hosted in GitHub
 ![Linux](https://img.shields.io/badge/linux-F4BC00?logo=linux&logoColor=black)
 ![macOS](https://img.shields.io/badge/macOS-999999?logo=apple)
 [![GitHub Release](https://img.shields.io/github/v/release/jin-gizmo/tocmark)](https://github.com/jin-gizmo/tocmark/releases/latest)
-[![GitHub License](https://img.shields.io/github/license/jin-gizmo/tocmark)](https://github.com/jin-gizmo/makehelp/blob/master/LICENCE.txt)
+[![GitHub License](https://img.shields.io/github/license/jin-gizmo/tocmark)](https://github.com/jin-gizmo/tocmark/blob/master/LICENCE.txt)
 
 ---
 <!-- toc-start min=2 max=2 style=linear -->

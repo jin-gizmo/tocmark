@@ -1,6 +1,9 @@
-name: "Markdown TOC Updater"
-description: "Update the table of contents in a Markdown file using tocmark"
+name: "TOCmark - Markdown TOC Generator"
+description: "(Re-)Generate a table of contents in a Markdown file with configurable format and heading selection"
 author: "Jin-Gizmo"
+branding:
+  icon: list
+  color: red
 
 inputs:
   file:
