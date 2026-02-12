@@ -1,0 +1,38 @@
+name: "Markdown TOC Updater"
+description: "Update the table of contents in a Markdown file using tocmark"
+author: "Jin-Gizmo"
+
+inputs:
+  file:
+    description: "Markdown file to update"
+    required: true
+    default: "README.md"
+
+outputs:
+  changed:
+    description: "Whether the file was modified by tocmark"
+    value: ${{ steps.tocmark.outputs.changed }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: tocmark
+      shell: bash
+      run: |
+        set -e
+        z=1
+        tmp=$(mktemp)
+        trap '/bin/rm -f "$tmp"; exit $z' 0
+
+        # Run tocmark on the input file
+        "$GITHUB_ACTION_PATH/tocmark" "${{ inputs.file }}" > "$tmp"
+
+        # Compare to see if the file changed
+        if ! cmp -s "$tmp" "${{ inputs.file }}"
+        then
+            mv "$tmp" "${{ inputs.file }}"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+        else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+        fi
+        z=0

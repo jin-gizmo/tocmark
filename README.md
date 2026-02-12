@@ -1,0 +1,309 @@
+# TOCmark - Yet Another Markdown TOC Generator
+
+<div align="center">
+<img src="doc/img/tocmark-icon.png" alt="TOCmark Logo" width="130px" height="auto">
+</div>
+
+<br clear="left"/>
+
+**TOCmark** is a simple AWK based gizmo for generating a table of contents for a
+Markdown file. It's primary intended use is for Markdown files hosted in GitHub
+(e.g. README.md files).
+
+![AWK](https://img.shields.io/badge/AWK-6D8B23)
+![Linux](https://img.shields.io/badge/linux-F4BC00?logo=linux&logoColor=black)
+![macOS](https://img.shields.io/badge/macOS-999999?logo=apple)
+[![GitHub Release](https://img.shields.io/github/v/release/jin-gizmo/tocmark)](https://github.com/jin-gizmo/tocmark/releases/latest)
+[![GitHub License](https://img.shields.io/github/license/jin-gizmo/tocmark)](https://github.com/jin-gizmo/makehelp/blob/master/LICENCE.txt)
+
+---
+<!-- toc-start min=2 max=2 style=linear -->
+
+<!-- toc-end -->
+
+---
+
+## Features
+
+<!-- toc text= -->
+
+*   Generates a table of contents (TOC) for Markdown files using GitHub
+    conventions.
+
+*   Supports hierarchical list, compact and linear style TOCs.
+
+*   Allows alternate text for headings to be shown in the TOC.
+
+*   Allows headings to be individually excluded from the TOC.
+
+*   Starting heading level and depth can be specified.
+
+*   Suitable for use in GitHub actions.
+
+*   Supports macOS awk, nawk, GNU AWK (gawk), POSIX AWK, mawk and BusyBox
+    AWK.
+
+## Genesis
+
+There are a bunch of similar tools out there that will generate a TOC for a
+Markdown document. Most seemed to require non-ubiquitous tools be installed
+(e.g. npm for crying out loud), or were a bit limited in the ability to control
+what headings were selected and how they were presented.
+
+**TOCmark** aims to provide a reasonable level of control over TOC heading
+selection and presentation using only POSIX AWK, which is available on all good
+operating systems. [^1]
+
+[^1]: The opposite is not true. Not all operating systems with AWK are good.
+
+Yes, GitHub does have the *document outline* feature for README files, but it's
+a bit out of the way and you can't control what goes in there.
+
+## Prerequisites
+
+**TOCmark** needs only the following:
+
+*   AWK : **mawk**, **nawk**, GNU **gawk**, macOS **awk** (ancient nawk?), any
+    POSIX **awk**, and BusyBox **awk** are all fine.
+
+## Getting Started
+
+[Download](https://github.com/jin-gizmo/tocmark/releases/latest) the
+**TOCmark** AWK script and make it executable.
+
+**TOCmark** uses HTML style comments in the Markdown source document to
+indicate where the TOC should be placed, what it should contain, and how it
+should be presented. These comments remain in the document and are ignored by
+the likes of GitHub.
+
+The following lines mark the place in a Markdown document where **TOCmark** will
+insert a generated table of contents. Any existing content between these lines
+will be replaced.
+
+```markdown+html
+<!-- toc-start -->
+<!-- toc-end -->
+```
+
+Run **TOCmark** like so:
+
+```bash
+tocmark README.md
+# ... or ...
+awk -f tocmark README.md
+```
+
+> [!NOTE]
+> The `tocmark` file is both a bash script and an AWK script. You can run it as
+> either. Neat eh?
+
+The updated document containing the TOC is written to stdout. What happens then
+is your problem. A typical use might be something like this:
+
+```bash
+tmp=$(mktemp)
+tocmark README.md > $tmp && mv $tmp README.md
+rm -f $tmp
+```
+
+See also [Use with Make](#use-with-make) and 
+[Use with GitHub Events](#use-with-github-events).
+
+As an example, this README uses the following TOC directive:
+
+```markdown+html
+<!-- toc-start min=2 max=2 style=linear -->
+<!-- toc-end -->
+```
+
+> [!NOTE]
+> Some headings are explicitly excluded because they are directly visible when
+> the TOC is visible.
+
+## TOC Selection and Formatting
+<!-- toc text="TOC Selection & Formatting" -->
+
+The `toc-start` directive can accept the following parameters in `name="value"`
+format. Multiple parameters should be separated by whitespace. Single quotes can
+be used instead of double quotes. Quotes are optional for values that don't
+contain spaces or quotes.
+
+| Parameter | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| min       | The minimum heading level to include in the TOC. The default is 1. |
+| max       | The maximum heading level to include in the TOC. The default is 3. |
+| mark      | The *bullet* used to introduce items in the TOC. The default is the standard HTML bullet `&bull;`. HTML characters can be used (e.g. `&#9737;` for the *sun* character ☉). |
+| style     | See [TOC Styles](#toc-styles) below.                         |
+
+The text displayed in the TOC for a heading defaults to the heading text itself.
+This can be modified by following the heading in question with an HTML comment
+like so:
+
+```markdown+html
+# A Heading with a Very Long Title
+<!-- toc text="Heading Text for TOC" -->
+```
+
+Single quotes can be used instead of double quotes.
+
+To omit a heading entirely, set the value of `text` to an empty string. e.g.
+
+```markdown+html
+# Don't Put this Heading in the TOC
+<!-- toc text= -->
+```
+
+> [!IMPORTANT]
+> If a heading is omitted from the TOC in this way, all of its children are also
+> omitted.
+
+## TOC Styles
+
+By default, **TOCmark** uses a Markdown nested list for the TOC. This can take
+more space than is sometimes desirable.
+
+It the `style` parameter of the `toc-start` directive is set to `compact`, a
+more compact nested list is generated using GitHub compatible HTML.
+
+If *style* is set to `linear`, a very compact format is generated. This is only
+suitable for use when a single heading level is included in the TOC. This
+README uses the `linear` style.
+
+## Use with Make
+
+A typical **make** recipe might look like this (assuming `tocmark` has been
+installed in the `etc` directory in your repo).
+
+```makefile
+## Update the TOC in README.md.
+toc:
+	@set -e ; \
+	tmp=$$(mktemp) ; \
+	z=1 ; \
+	trap '/bin/rm -f $$tmp; exit $$z' 0 ; \
+	etc/tocmark README.md > $$tmp || exit ; \
+	cp README.md README.md.bak ; \
+	mv $$tmp README.md ; \
+	echo "README.md TOC updated" ; \
+	z=0
+```
+
+> [!NOTE]
+> The `##` comment is for auto-help generation using
+> [MakeHelp](https://github.com/jin-gizmo/makehelp).
+
+## Use with GitHub Events
+
+This repo publishes a GitHub event that can either be invoked directly in your
+own workflows or copied into a repo of your own and reused from there.
+
+> [!TIP]
+> I wouldn't randomly execute code from a third party repo if I were you,
+> particularly if it needs write permission to your repo. But you can if you 
+> want to.
+
+Assuming you wish to use the action published from this repo, your GitHub
+workflow file (`.github/workflows/tocmark.yaml`) would look something like this
+to update the TOC in your own `README.md`.
+
+```yaml
+name: Update TOC in README.md
+on:
+  push:
+    branches: [ master, main ]
+    paths: [ 'README.md' ]
+
+jobs:
+  update-toc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: toc-update-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Update README TOC
+        id: toc
+        uses: jin-gizmo/tocmark@v1
+        with:
+          file: README.md
+
+      - name: Commit changes if TOC updated
+        if: steps.toc.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: update README TOC [skip ci]" && git push
+```
+
+If you prefer to include a copy of **TOCmark** in your own repo (e.g.
+`etc/tocmark`), the workflow would look something like this:
+
+```yaml
+name: Update TOC in README.md
+on:
+  push:
+    branches: [ master, main ]
+    paths: [ 'README.md' ]
+
+jobs:
+  update-toc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Update TOC
+        run: |
+          set -e
+          z=1
+          tmp=$(mktemp)
+          trap '/bin/rm -f "$tmp"; exit $z' 0
+          etc/tocmark README.md > "$tmp"
+          mv "$tmp" README.md
+          z=0
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || \
+            (git commit -m "docs: update README TOC [skip ci]" && git push)
+```
+
+## Editor Support for TOCmark
+<!-- toc text="Editor Support" -->
+
+### Vim
+
+The `markdown.vim` file included in a **TOCmark** release contains syntax
+colouring instructions for the **TOCmark** additions for **vim**.
+
+Copy this file to `~/.vim/after/syntax/markdown.vim`. 
+
+The file contains a few different colour selections for inspiration. Either pick
+one you like or add your own.
+
+## Caveats and Limitations
+<!-- toc text="Caveats & Limitations" -->
+
+**TOCmark** is primarily intended for use with GitHub. Its suitability for
+other uses will vary.
+
+[![Jin Gizmo Home](https://img.shields.io/badge/Jin_Gizmo_Home-d30000?logo=GitHub&color=d30000)](https://jin-gizmo.github.io)
+
+## Release Notes
+
+#### v1.0.0
+
+Initial release.
+
+## More Gizmos
+
+For more gizmos, check out Jin Gizmo.

@@ -1,0 +1,4 @@
+*.bak
+.bash_history
+dist/
+untracked/
