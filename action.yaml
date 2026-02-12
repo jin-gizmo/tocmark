@@ -1,6 +1,9 @@
 name: "Markdown TOC Updater"
 description: "Update the table of contents in a Markdown file using tocmark"
 author: "Jin-Gizmo"
+branding:
+  icon: list
+  color: red
 
 inputs:
   file:
