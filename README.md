@@ -1,7 +1,7 @@
 # TOCmark - Yet Another Markdown TOC Generator
 
 <div align="center">
-<img src="doc/img/tocmark-icon.png" alt="TOCmark Logo" width="130px" height="auto">
+<img src="doc/img/tocmark-icon.png" alt="TOCmark Logo" width="110px" height="auto">
 </div>
 
 <br clear="left"/>
@@ -11,6 +11,7 @@ Markdown file. It's primary intended use is for Markdown files hosted in GitHub
 (e.g. README.md files).
 
 ![AWK](https://img.shields.io/badge/AWK-6D8B23)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace_%2F_Actions-%23181717?logo=GitHub&logoColor=white)](#use-with-github-actions)
 ![Linux](https://img.shields.io/badge/linux-F4BC00?logo=linux&logoColor=black)
 ![macOS](https://img.shields.io/badge/macOS-999999?logo=apple)
 [![GitHub Release](https://img.shields.io/github/v/release/jin-gizmo/tocmark)](https://github.com/jin-gizmo/tocmark/releases/latest)
@@ -26,7 +27,7 @@ Markdown file. It's primary intended use is for Markdown files hosted in GitHub
 [TOC&nbsp;Selection&nbsp;&&nbsp;Formatting](#toc-selection-and-formatting) &bull;
 [TOC&nbsp;Styles](#toc-styles) &bull;
 [Use&nbsp;with&nbsp;Make](#use-with-make) &bull;
-[Use&nbsp;with&nbsp;GitHub&nbsp;Events](#use-with-github-events) &bull;
+[Use&nbsp;with&nbsp;GitHub&nbsp;Actions](#use-with-github-actions) &bull;
 [Editor&nbsp;Support](#editor-support-for-tocmark) &bull;
 [Caveats&nbsp;&&nbsp;Limitations](#caveats-and-limitations) &bull;
 [Release&nbsp;Notes](#release-notes) &bull;
@@ -51,10 +52,11 @@ Markdown file. It's primary intended use is for Markdown files hosted in GitHub
 
 *   Starting heading level and depth can be specified.
 
-*   Suitable for use in GitHub actions.
-
 *   Supports macOS awk, nawk, GNU AWK (gawk), POSIX AWK, mawk and BusyBox
     AWK.
+
+*   Available as a stand-alone CLI utility or a 
+    [GitHub Action](#use-with-github-actions).
 
 ## Genesis
 
@@ -120,7 +122,7 @@ rm -f $tmp
 ```
 
 See also [Use with Make](#use-with-make) and 
-[Use with GitHub Events](#use-with-github-events).
+[Use with GitHub Actions](#use-with-github-actions).
 
 As an example, this README uses the following TOC directive:
 
@@ -205,19 +207,16 @@ toc:
 > The `##` comment is for auto-help generation using
 > [MakeHelp](https://github.com/jin-gizmo/makehelp).
 
-## Use with GitHub Events
+## Use with GitHub Actions
 
-This repo publishes a GitHub event that can either be invoked directly in your
-own workflows or copied into a repo of your own and reused from there.
+This repo publishes a GitHub action to the [GitHub
+Marketplace](https://github.com/marketplace/actions/tocmark-markdown-toc-generator)
+that can either be invoked directly in your own workflows or copied into a repo
+of your own and reused from there.
 
-> [!TIP]
-> I wouldn't randomly execute code from a third party repo if I were you,
-> particularly if it needs write permission to your repo. But you can if you 
-> want to.
-
-Assuming you wish to use the action published from this repo, your GitHub
-workflow file (`.github/workflows/tocmark.yaml`) would look something like this
-to update the TOC in your own `README.md`.
+Assuming you wish to use the action published from this repo to update the TOC
+in your own `README.md`, your GitHub workflow file
+(`.github/workflows/tocmark.yaml`) would look something like this:
 
 ```yaml
 name: Update TOC in README.md
@@ -309,8 +308,6 @@ one you like or add your own.
 **TOCmark** is primarily intended for use with GitHub. Its suitability for
 other uses will vary.
 
-[![Jin Gizmo Home](https://img.shields.io/badge/Jin_Gizmo_Home-d30000?logo=GitHub&color=d30000)](https://jin-gizmo.github.io)
-
 ## Release Notes
 
 #### v1.0.0
@@ -320,3 +317,5 @@ Initial release.
 ## More Gizmos
 
 For more gizmos, check out Jin Gizmo.
+
+[![Jin Gizmo Home](https://img.shields.io/badge/Jin_Gizmo_Home-d30000?logo=GitHub&color=d30000)](https://jin-gizmo.github.io)
