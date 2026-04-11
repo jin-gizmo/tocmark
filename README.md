@@ -7,7 +7,7 @@
 <br clear="left"/>
 
 **TOCmark** is a simple AWK based gizmo for generating a table of contents for a
-Markdown file. It's primary intended use is for Markdown files hosted in GitHub
+Markdown file. Its primary intended use is for Markdown files hosted in GitHub
 (e.g. README.md files).
 
 ![AWK](https://img.shields.io/badge/AWK-6D8B23)
